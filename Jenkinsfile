@@ -1,49 +1,37 @@
-node {
-    // reference to maven
-    // ** NOTE: This 'maven-3.6.1' Maven tool must be configured in the Jenkins Global Configuration.   
-    def mvnHome = tool 'maven-3.6.3'
-
-    // holds reference to docker image
-    def dockerImage
-    // ip address of the docker private repository(nexus)
-    def dockerRepoUrl = "https://hub.docker.com/repository/docker/yashodamunnangi/yashodahub1/general"
-   // def dockerRepoUrl = "localhost:8083"
-    def dockerImageName = "hello-world-java"
-    def dockerImageTag = "${dockerRepoUrl}/${dockerImageName}:${env.BUILD_NUMBER}"
-    
-    stage('Clone Repo') { // for display purposes
-      // Get some code from a GitHub repository
-      git 'https://github.com/YASHODA-MUNNANGI/jenkins_docker.git'
-      // Get the Maven tool.
-      // ** NOTE: This 'maven-3.6.1' Maven tool must be configured
-      // **       in the global configuration.           
-      mvnHome = tool 'maven-3.6.3'
-    }    
+pipeline {
+  agent any
   
-    stage('Build Project') {
-      // build project via maven
-      sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
+  stages {
+    stage('Build') {
+      steps {
+        // Checkout source code from version control
+        git 'https://github.com/YASHODA-MUNNANGI/jenkins_docker.git'
+        
+        
+      }
     }
-	
-	
-		
-    stage('Build Docker Image') {
-      // build docker image
-      sh "whoami"
-      sh "ls -all /var/run/docker.sock"
-      sh "mv ./target/hello*.jar ./data" 
-      
-      dockerImage = docker.build("hello-world-java")
+    
+    stage('Docker Build') {
+      steps {
+        // Build the Docker image
+        script {
+          docker.withRegistry('https://index.docker.io/v1/', 'dockerregistry') {
+            def customImage = docker.build('hello-world-java1', '-f Dockerfile .')
+            customImage.push()
+          }
+        }
+      }
     }
-   
-    stage('Deploy Docker Image'){
-      
-      // deploy docker image to nexus
-
-      echo "Docker Image Tag Name: ${dockerImageTag}"
-
-      sh "docker login -u yashodamunnangi -p dckr_pat_s8l9JD8hS2HSwnqYySaXFwMEBig ${dockerRepoUrl}"
-      sh "docker tag ${dockerImageName} ${dockerImageTag}"
-      sh "docker push ${dockerImageTag}"
+    
+    stage('Deploy') {
+      steps {
+        // Deploy the Docker container
+        script {
+          docker.withRegistry('https://index.docker.io/v1/', 'dockerregistry') {
+            sh 'docker run -it hello-world-java1'
+          }
+        }
+      }
     }
+  }
 }
