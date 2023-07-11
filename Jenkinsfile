@@ -2,10 +2,12 @@ pipeline {
   agent any
   
   stages {
-    stage('Build') {
+    stage('Clone repo') {
       steps {
         // Checkout source code from version control
-        git 'https://github.com/YASHODA-MUNNANGI/jenkins_docker.git'
+        git url: 'https://github.com/YASHODA-MUNNANGI/jenkins_docker.git',
+            credentialsId: 'GITHUB'
+            branch: 'main'
         
         
       }
