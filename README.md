@@ -32,7 +32,7 @@ Maven build will be executes during creation of the docker image.
 docker run -p 8080:8080 -it --rm hello-world-java
 ```
 
-##### Test application
+###### Test application
 
 ```
 curl localhost:8080
