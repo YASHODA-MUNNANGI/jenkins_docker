@@ -1,23 +1,23 @@
 node {
     // reference to maven
     // ** NOTE: This 'maven-3.6.1' Maven tool must be configured in the Jenkins Global Configuration.   
-    def mvnHome = tool 'maven-3.8.5'
+    def mvnHome = tool 'maven-3.6.3'
 
     // holds reference to docker image
     def dockerImage
     // ip address of the docker private repository(nexus)
-    
-    def dockerRepoUrl = "localhost:8083"
+    def dockerRepoUrl = "https://hub.docker.com/repository/docker/yashodamunnangi/yashodahub1/general"
+   // def dockerRepoUrl = "localhost:8083"
     def dockerImageName = "hello-world-java"
     def dockerImageTag = "${dockerRepoUrl}/${dockerImageName}:${env.BUILD_NUMBER}"
     
     stage('Clone Repo') { // for display purposes
       // Get some code from a GitHub repository
-      git 'https://github.com/dstar55/docker-hello-world-spring-boot.git'
+      git 'https://github.com/YASHODA-MUNNANGI/jenkins_docker.git'
       // Get the Maven tool.
       // ** NOTE: This 'maven-3.6.1' Maven tool must be configured
       // **       in the global configuration.           
-      mvnHome = tool 'maven-3.8.5'
+      mvnHome = tool 'maven-3.6.3'
     }    
   
     stage('Build Project') {
@@ -25,17 +25,7 @@ node {
       sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
     }
 	
-	stage('Publish Tests Results'){
-      parallel(
-        publishJunitTestsResultsToJenkins: {
-          echo "Publish junit Tests Results"
-		  junit '**/target/surefire-reports/TEST-*.xml'
-		  archive 'target/*.jar'
-        },
-        publishJunitTestsResultsToSonar: {
-          echo "This is branch b"
-      })
-    }
+	
 		
     stage('Build Docker Image') {
       // build docker image
@@ -52,7 +42,7 @@ node {
 
       echo "Docker Image Tag Name: ${dockerImageTag}"
 
-      sh "docker login -u admin -p admin123 ${dockerRepoUrl}"
+      sh "docker login -u yashodamunnangi -p dckr_pat_s8l9JD8hS2HSwnqYySaXFwMEBig ${dockerRepoUrl}"
       sh "docker tag ${dockerImageName} ${dockerImageTag}"
       sh "docker push ${dockerImageTag}"
     }
