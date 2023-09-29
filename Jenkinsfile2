@@ -13,18 +13,16 @@ pipeline {
 
     stage('Docker Build') {
       steps {
-        // Build the Docker image
         script {
-          sh 'docker build -t hello-world-java1 -f Dockerfile .'
+          docker.image('hello-world-java1').build('-f Dockerfile .')
         }
       }
     }
 
     stage('Deploy') {
       steps {
-        // Deploy the Docker container
         script {
-          sh 'docker run -d -p 8080:8080 hello-world-java1'
+          docker.image('hello-world-java1').run('-p 8080:8080')
         }
       }
     }
