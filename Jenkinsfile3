@@ -22,7 +22,7 @@ pipeline {
     stage('Deploy') {
       steps {
         // Deploy the Docker container
-        sudo docker run -d -p 8080:80 --name my-app-container my-app:0.1
+        sudo docker run -it --name my-app-container my-app:0.1
         }
       }
     }
