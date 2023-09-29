@@ -6,7 +6,7 @@ pipeline {
       steps {
         // Checkout source code from version control
         git url: 'https://github.com/YASHODA-MUNNANGI/jenkins_docker.git',
-            credentialsId: 'GITHUB'
+            credentialsId: 'guthub'
             branch: 'main'
         
         
