@@ -8,8 +8,6 @@ pipeline {
         git url: 'https://github.com/YASHODA-MUNNANGI/jenkins_docker.git',
             credentialsId: 'guthub'
             branch: 'main'
-        
-        
       }
     }
     
