@@ -1,28 +1,32 @@
 pipeline {
-  agent any
+    agent any
   
-  stages {
-    stage('Clone repo') {
-      steps {
-        // Checkout source code from version control
-        git url: 'https://github.com/YASHODA-MUNNANGI/jenkins_docker.git',
-            credentialsId: 'guthub',
-            branch: 'main'
-      }
+    stages {
+        stage('Clone repo') {
+            steps {
+                // Checkout source code from version control
+                git url: 'https://github.com/YASHODA-MUNNANGI/jenkins_docker.git',
+                    credentialsId: 'guthub',
+                    branch: 'main'
+            }
+        }
+        
+        stage('Docker Build') {
+            steps {
+                // Build the Docker image
+                script {
+                    sh 'sudo docker build -t my-app:0.1 -f Dockerfile .'
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                // Deploy the Docker container
+                script {
+                    sh 'sudo docker run -it --name my-app-container my-app:0.1'
+                }
+            }
+        }
     }
-    
-    stage('Docker Build') {
-      steps {
-        // Build the Docker image
-        sudo docker build -t my-app:0.1 -f Dockerfile . 
-      }
-    }
-    
-    stage('Deploy') {
-      steps {
-        // Deploy the Docker container
-        sudo docker run -it --name my-app-container my-app:0.1
-      }
-    }
-  }
 }
